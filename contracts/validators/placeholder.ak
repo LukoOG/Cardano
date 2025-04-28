@@ -11,6 +11,8 @@ pub type Redeemer {
   msg: ByteArray,
 }
 
+//conditions: The redeemer must be saying "Hello, World!" and must be the owner;
+//validated by checking if the signature is the same as the owner
 validator hello_world {
   spend(
     datum: Option<Datum>,
