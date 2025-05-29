@@ -51,3 +51,26 @@ test hello_world_example() {
     Transaction { ..transaction.placeholder, extra_signatories: [datum.owner] },
   )
 }
+
+//pattern-matching on lists
+fn get_head(xs: List<a>) -> Option<a> {
+  when xs is {
+    [] -> None
+    [a, ..] -> Some(a)
+  }
+}
+
+fn is_empty(xs: List<a>) -> Bool {
+  when xs is {
+    [] -> True
+    [_, ..] -> False
+  }
+}
+
+fn get_tail(xs: List<a>) -> List<a> {
+  when xs is {
+    [] -> []
+    // debatable
+    [_, ..tail] -> tail
+  }
+}

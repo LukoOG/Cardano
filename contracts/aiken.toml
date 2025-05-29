@@ -15,4 +15,8 @@ name = "aiken-lang/stdlib"
 version = "v2.2.0"
 source = "github"
 
-[config]
+[config.default]
+price = 1_000_000
+
+[config.mainnet]
+price = 2_000_000
