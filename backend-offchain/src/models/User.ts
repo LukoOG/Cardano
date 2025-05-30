@@ -6,10 +6,10 @@ const status = [
     "Cancelled",
 ] as const;
 
-export interface IZkLoginInfo {
-  sub: string;
-  salt: string;
-}
+// export interface IZkLoginInfo {
+//   sub: string;
+//   salt: string;
+// }
 
 interface Location  {
   home: string,
@@ -24,10 +24,10 @@ export interface IUser extends Document{
     role: string;
     NIN: string;
     location: Location;
-    suiWalletAddress: string;
+    cardanoWalletAddress: string;
     mnemonic?: string;
     imgUrl?: string;
-    zkLogin: IZkLoginInfo | null,
+    // zkLogin: IZkLoginInfo | null,
     kycVerified: boolean;
     farms: mongoose.Types.ObjectId[];
 }
@@ -45,15 +45,9 @@ const UserSchema = new Schema<IUser>({
       home: String,
       state: String,
     }, required: true, _id: false},
-    suiWalletAddress: { type: String }, // Store generated wallet address zkogin or traditional
+    cardanoWalletAddress: { type: String }, // Store generated wallet address zkogin or traditional
     mnemonic: { type: String }, //Store encrypted mnemonic
     imgUrl: { type: String },
-    zkLogin: {type:
-      {
-        sub: String,
-        salt: String,
-      }
-    },
     kycVerified: { type: Boolean, default: false }, // Future KYC verification
     farms: { type: [Schema.Types.ObjectId], ref: "Farm", default: null }
 })
