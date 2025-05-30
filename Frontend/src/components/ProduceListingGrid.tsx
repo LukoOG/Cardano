@@ -20,7 +20,7 @@ const ProduceListingGrid = ({
     : crops.filter((crop) => crop.category === filter);
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-14 gap-y-8 place-items-center">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 place-items-center">
       <AnimatePresence>
         {filteredCrops.length ? (
           filteredCrops.map((crop, idx) => (
