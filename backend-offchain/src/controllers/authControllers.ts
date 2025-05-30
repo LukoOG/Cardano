@@ -57,9 +57,10 @@ export const register = async (req: Request, res: Response) => {
         const hashedPassword: string = await bcrypt.hash(password, salt);
 
 //generate mnemonic(importation of the wallet mnemonic)
-import { generateWallet, encryptMnemonic } from "../utils/mnemonicUtils";
 
-const { mnemonic, privateKey } = await generateWallet();
+import { generateWallet, encryptMnemonic } from "../utils/wallet_mnemonics";
+
+const { mnemonic, privateKey } = await generateWallet()
 const lucid = await Lucid.new(undefined, "Mainnet");
 await lucid.selectWalletFromPrivateKey(privateKey);
 const suiWalletAddress = await lucid.wallet.address();
