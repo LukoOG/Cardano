@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getkeypair, getmnemonic, login, register, updateProfile } from "../controllers/authControllers";
+import {  getmnemonic, login, register, updateProfile } from "../controllers/authControllers";
 import upload from "../middlewares/upload";
 
 
@@ -17,6 +17,5 @@ router.put(
     updateProfile
 )
 router.post("/register", register)
-router.post("/keypair", getkeypair)
 router.post("/get-mnemonic", getmnemonic)
 export default router

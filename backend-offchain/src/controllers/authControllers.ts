@@ -1,28 +1,15 @@
 import { Request, Response } from "express";
-import { decryptMnemonic, encryptMnemonic, getKeypair } from "../utils/wallet_mnemonics";
 import crypto from  "crypto"
-import { generateMnemonic, mnemonicToPrivateKey } from "@lucid-evolution/lucid";
+
+import { User, IUser, SafeUser } from "../models/User";
+import { startSession, Error } from "mongoose"
+
 import * as bcrypt from "bcrypt"
 import * as bip39 from "bip39"
 import * as jwt from "jsonwebtoken"
-import {
-    genAddressSeed,
-    generateNonce,
-    generateRandomness,
-    jwtToAddress,
-    getZkLoginSignature,
-    getExtendedEphemeralPublicKey,
-} 
 import { Lucid, fromHex, toHex } from "@lucid-evolution/lucid";
-import { generateMnemonic, mnemonicToPrivateKey } from "@lucid-evolution/lucid"; // for HD wallet derivation
-import { derivePath } from "ed25519-hd-key";
-const mnemonic = generateMnemonic(); // 24-word phrase
-const privateKey = await mnemonicToPrivateKey(mnemonic);
+import { generateWallet, encryptMnemonic } from "../utils/wallet_mnemonics";
 
-const lucid = await Lucid.new(undefined, "Mainnet");
-await lucid.selectWalletFromPrivateKey(privateKey);
-
-const address = await lucid.wallet.address();
 
 
 
@@ -58,14 +45,12 @@ export const register = async (req: Request, res: Response) => {
 
 //generate mnemonic(importation of the wallet mnemonic)
 
-import { generateWallet, encryptMnemonic } from "../utils/wallet_mnemonics";
+    // const { mnemonic, privateKey } = await generateWallet()
+    // const lucid = await Lucid.new(undefined, "Mainnet");
+    // await lucid.selectWalletFromPrivateKey(privateKey);
+    // const cardanoWalletAddress = await lucid.wallet.address();
 
-const { mnemonic, privateKey } = await generateWallet()
-const lucid = await Lucid.new(undefined, "Mainnet");
-await lucid.selectWalletFromPrivateKey(privateKey);
-const suiWalletAddress = await lucid.wallet.address();
-
-const encryptedMnemonic = encryptMnemonic(mnemonic, password);
+    // const encryptedMnemonic = encryptMnemonic(mnemonic, password);
 
 
 //this place should contain the link of the wallet file and the mnemonic file
@@ -77,7 +62,6 @@ const encryptedMnemonic = encryptMnemonic(mnemonic, password);
             home: address,
             state: state
         }
-,
 
         const userData = new User({
             name: fullname,
@@ -87,9 +71,9 @@ const encryptedMnemonic = encryptMnemonic(mnemonic, password);
             role,
             NIN: nin,
             location,
-            mnemonic: encryptMnemonic(mnemonic, password), //store the encrypted mnemonic
+            mnemonic: "",//encryptMnemonic(mnemonic, password), //store the encrypted mnemonic
             imgUrl: "https://res.cloudinary.com/dfxieiol1/image/upload/v1748355861/default-pici_rxkswj.png", //default profile picture
-            suiWalletAddress,
+            cardanoWalletAddress: "",
             farms: role === "farmer" ? [] : null
         });
         
@@ -123,7 +107,7 @@ const encryptedMnemonic = encryptMnemonic(mnemonic, password);
         const payload = { user: userObj };
         const token = jwt.sign(payload, process.env.TOKEN_SECRET!, { expiresIn: "7d" });
     
-        res.json({ token, mnemonic });
+        res.json({ token})//, mnemonic });
         
     } catch(error){
         if(development){
@@ -207,35 +191,6 @@ export const refresh_token = async () => {
 
 //development testing. Sending keypair bytes
 //bad practice. Keypair derivation will happen client-side
-export const getkeypair = async (req: Request, res:Response) => {
-    try{
-        const { email, password } = req.body
-
-        //get the user
-        const user = await User.findOne({email}) as IUser
-        if (!user){
-            res.status(400).json({ msg: "User does not exist" })
-            return;
-        };
-        
-        const isMatch = bcrypt.compare(password, user.password as string)
-        if (!isMatch){
-            res.status(400).json({ msg:"Invalid credentials" })
-            return;
-        }
-
-        const keypair = await getKeypair(user.mnemonic as string, password)
-
-        //coding to bytes
-        const secretKey = keypair.getSecretKey(); // bech 32 encoded secet key
-
-        res.status(200).json({keypair: secretKey})
-        return
-    } catch(error){
-        res.status(500).json({error:"error getting user keypair"})
-        console.log(error)
-    }
-}
 
 export const getmnemonic = async (req: Request, res:Response) => {
     try{
@@ -262,49 +217,7 @@ export const getmnemonic = async (req: Request, res:Response) => {
         console.log(error)
     }
 }
-/* 
-The zklogin workflow is in two parts A and B
 
-A(Address derivation)
-i. After receiving jwt payload from oauth provider we retrieve the iss, sub and aud
-ii. Generate an Ephemeral keypair(eKP) for signing transactions stored in sesion, the max epoch(mE) which is the validity
-    period of the ephemeral keypair and randomness from te provided generateRandomness function of mysten labs
-    note: (1 epoch ~= 24h)
-iii.  We then generate nonce using the 3 parameters from step 2. Note: we use the public key from .getPublicKey() and
-        not the whole keypair
-iv. We compute a salt which will be associated with the zklogin address. Note: this is similar to mnemonics, if lost, the
-    addres is also lost.
-v. Finally we provide the jwtpayload and salt to the jwtToAddress function from mysten labs to generate their address
-
-Note: nonce is given to the oauth provider to generate the jwt...frontend implementation
-B.(Signing transactions)
-i.  We first get the zkproof using the extended ephemeral keypair of the generated keypair (eKP) from earlier or a new keypair
-    and send a request to Sui's backed servce to get get the proof as so:  
-    const zkProofResult = await axios.post(
-  "https://prover-dev.mystenlabs.com/v1",
-  {
-    jwt: oauthParams?.id_token as string,
-    extendedEphemeralPublicKey: extendedEphemeralPublicKey,
-    maxEpoch: maxEpoch,
-    jwtRandomness: randomness,
-    salt: userSalt,
-    keyClaimName: "sub",
-  },
-  {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }
-).data;
-
-const partialZkLoginSignature = zkProofResult as PartialZkLoginSignature
-
-ii. We then assemble the signature using an address seed gotten from the jwt payload and salt, the maxepoch, usersignature
-    from ephemeral keypair and the partialzklogn signature. After assembling the signature we can then execute a transaction
-    block with it.
-    Note: Each ZK Proof is associated with an ephemeral key pair. Stored in the appropriate location, 
-    it can be reused as proof to sign any number of transactions until the ephemeral key pair expires.
- */
 type OauthPayload = {
     provider: string,
     sub: string,
