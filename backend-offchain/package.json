@@ -9,6 +9,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@emurgo/cardano-serialization-lib-nodejs": "^14.1.2",
     "@lucid-evolution/lucid": "^0.4.27",
     "bcrypt": "^6.0.0",
     "cloudinary": "^1.30.0",
