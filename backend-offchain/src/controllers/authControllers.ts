@@ -102,9 +102,10 @@ export const register = async (req: Request, res: Response) => {
         const payload = { user: userObj };
         const token = jwt.sign(payload, process.env.TOKEN_SECRET!, { expiresIn: "7d" });
     
-        res.json({ token})//, mnemonic });
+        res.json({ token, mnemonic });
         
     } catch(error){
+        // console.log("this is the: ",error);
         if(development){
             console.log("this is the: ",error);
         }
