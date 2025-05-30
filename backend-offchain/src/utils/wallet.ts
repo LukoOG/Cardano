@@ -10,6 +10,7 @@ import * as bip39 from 'bip39';
 // You need to define and connect your own WalletModel to store the wallet data in a database
 // import WalletModel from '../models/Wallet';
 
+
 export async function generateCardanoWallet(): Promise<{
   ticker: string;
   address: string;

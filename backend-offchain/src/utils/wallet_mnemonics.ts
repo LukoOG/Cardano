@@ -1,4 +1,5 @@
-import { generateMnemonic, mnemonicToPrivateKey } from "@lucid-evolution/lucid";
+
+// import { generateMnemonic, mnemonicToPrivateKey } from "@lucid-evolution/lucid";
 import crypto from "crypto";
 
 /**

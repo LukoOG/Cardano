@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { decryptMnemonic, encryptMnemonic, getKeypair } from "../utils/authUtils";
+import { decryptMnemonic, encryptMnemonic, getKeypair } from "../utils/wallet_mnemonics";
 import crypto from  "crypto"
 import { generateMnemonic, mnemonicToPrivateKey } from "@lucid-evolution/lucid";
 import * as bcrypt from "bcrypt"
