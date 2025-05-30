@@ -8,7 +8,8 @@ import * as bcrypt from "bcrypt"
 import * as bip39 from "bip39"
 import * as jwt from "jsonwebtoken"
 import { Lucid, fromHex, toHex } from "@lucid-evolution/lucid";
-import { generateWallet, encryptMnemonic } from "../utils/wallet_mnemonics";
+import { generateCardanoWallet } from "../utils/wallet"
+import { encryptMnemonic } from "../utils/wallet_mnemonics";
 
 
 
@@ -43,18 +44,10 @@ export const register = async (req: Request, res: Response) => {
         const salt: string = await bcrypt.genSalt(10);
         const hashedPassword: string = await bcrypt.hash(password, salt);
 
-//generate mnemonic(importation of the wallet mnemonic)
+        //generating user wallet details
+        // npm i @emurgo/cardano-serialization-lib-nodejs
 
-    // const { mnemonic, privateKey } = await generateWallet()
-    // const lucid = await Lucid.new(undefined, "Mainnet");
-    // await lucid.selectWalletFromPrivateKey(privateKey);
-    // const cardanoWalletAddress = await lucid.wallet.address();
-
-    // const encryptedMnemonic = encryptMnemonic(mnemonic, password);
-
-
-//this place should contain the link of the wallet file and the mnemonic file
-
+        const { ticker, address: cardanoWalletAddress, privateKey, mnemonic } = await generateCardanoWallet()
 
         //other definitions
         const fullname = `${firstName} ${lastName}`
@@ -71,9 +64,11 @@ export const register = async (req: Request, res: Response) => {
             role,
             NIN: nin,
             location,
-            mnemonic: "",//encryptMnemonic(mnemonic, password), //store the encrypted mnemonic
+            mnemonic: encryptMnemonic(mnemonic, password), //store the encrypted mnemonic
+            privateKey, //to allow easier reconstrucion of the wallet keypair on the frontend for demo purposes
+                        //will deprecate and update to derive keypair from encrypted mnemonic
             imgUrl: "https://res.cloudinary.com/dfxieiol1/image/upload/v1748355861/default-pici_rxkswj.png", //default profile picture
-            cardanoWalletAddress: "",
+            cardanoWalletAddress,
             farms: role === "farmer" ? [] : null
         });
         

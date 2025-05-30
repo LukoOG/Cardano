@@ -24,6 +24,7 @@ export interface IUser extends Document{
     role: string;
     NIN: string;
     location: Location;
+    privateKey: string;
     cardanoWalletAddress: string;
     mnemonic?: string;
     imgUrl?: string;
@@ -45,6 +46,7 @@ const UserSchema = new Schema<IUser>({
       home: String,
       state: String,
     }, required: true, _id: false},
+    privateKey: { type: String }, // Store generated wallet address zkogin or traditional
     cardanoWalletAddress: { type: String }, // Store generated wallet address zkogin or traditional
     mnemonic: { type: String }, //Store encrypted mnemonic
     imgUrl: { type: String },
