@@ -1,4 +1,3 @@
-import { generateMnemonic, mnemonictoPrivateKey } from "@lucid-evolution/lucid";
 import crypto from "crypto";
 
 /**
@@ -29,9 +28,3 @@ export const decryptMnemonic = (encrypted: string, password: string): string => 
 /**
  * Generate a 24-word mnemonic and derive its corresponding private key.
  */
-export const generateWallet = async (): Promise<{ mnemonic: string; privateKey: string }> => {
-    const mnemonic = generateMnemonic();
-    const privateKey = await mnemonicToPrivateKey(mnemonic);
-    return { mnemonic, privateKey };
-};
-
