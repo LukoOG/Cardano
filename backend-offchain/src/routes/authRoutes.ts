@@ -2,6 +2,8 @@ import { Router } from "express";
 import { getkeypair, getmnemonic, login, register, updateProfile } from "../controllers/authControllers";
 import upload from "../middlewares/upload";
 
+
+
 export const router = Router()
 
 router.post("/login", login)

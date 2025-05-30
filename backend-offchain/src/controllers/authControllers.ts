@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { decryptMnemonic, encryptMnemonic, getKeypair } from "../utils/authUtils";
 import crypto from  "crypto"
-
+import { generateMnemonic, mnemonicToPrivateKey } from "@lucid-evolution/lucid";
 import * as bcrypt from "bcrypt"
 import * as bip39 from "bip39"
 import * as jwt from "jsonwebtoken"
@@ -12,12 +12,19 @@ import {
     jwtToAddress,
     getZkLoginSignature,
     getExtendedEphemeralPublicKey,
-} from "@mysten/sui/zklogin";
-import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
+} 
+import { Lucid, fromHex, toHex } from "@lucid-evolution/lucid";
+import { generateMnemonic, mnemonicToPrivateKey } from "@lucid-evolution/lucid"; // for HD wallet derivation
 import { derivePath } from "ed25519-hd-key";
+const mnemonic = generateMnemonic(); // 24-word phrase
+const privateKey = await mnemonicToPrivateKey(mnemonic);
 
-import { User, IUser, SafeUser, IZkLoginInfo } from "../models/User";
-import { startSession, Error } from "mongoose";
+const lucid = await Lucid.new(undefined, "Mainnet");
+await lucid.selectWalletFromPrivateKey(privateKey);
+
+const address = await lucid.wallet.address();
+
+
 
 import "dotenv/config";
 import { Farm } from "../models/Farm";
@@ -49,15 +56,19 @@ export const register = async (req: Request, res: Response) => {
         const salt: string = await bcrypt.genSalt(10);
         const hashedPassword: string = await bcrypt.hash(password, salt);
 
-        //generate mnemonic
-        const mnemonic = bip39.generateMnemonic();
-        const seed = bip39.mnemonicToSeedSync(mnemonic);
-        const path = "m/44'/784'/0'/0'/0'"; // Standard for Sui wallets
-        const derivedKey = derivePath(path, seed.toString("hex")).key;
-    
-        //generating their wallet
-        const keypair = Ed25519Keypair.fromSecretKey(derivedKey);
-        const suiWalletAddress = keypair.toSuiAddress();
+//generate mnemonic(importation of the wallet mnemonic)
+import { generateWallet, encryptMnemonic } from "../utils/mnemonicUtils";
+
+const { mnemonic, privateKey } = await generateWallet();
+const lucid = await Lucid.new(undefined, "Mainnet");
+await lucid.selectWalletFromPrivateKey(privateKey);
+const suiWalletAddress = await lucid.wallet.address();
+
+const encryptedMnemonic = encryptMnemonic(mnemonic, password);
+
+
+//this place should contain the link of the wallet file and the mnemonic file
+
 
         //other definitions
         const fullname = `${firstName} ${lastName}`
@@ -65,6 +76,7 @@ export const register = async (req: Request, res: Response) => {
             home: address,
             state: state
         }
+,
 
         const userData = new User({
             name: fullname,
@@ -151,7 +163,7 @@ export const login = async (req: Request, res: Response) => {
 
         let userObj = user.toJSON() as SafeUser
         
-        //generate token
+        //generate token  
         const payload = { user: userObj };
         const token = jwt.sign(payload, process.env.TOKEN_SECRET!, { expiresIn: "7d" });
 
