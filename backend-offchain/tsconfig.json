@@ -5,7 +5,8 @@
    
     "module": "commonjs",                                
  
-    "esModuleInterop": true,                             
+    "esModuleInterop": true,   
+                              
     
     "forceConsistentCasingInFileNames": true,            
 

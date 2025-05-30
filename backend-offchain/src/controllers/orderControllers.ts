@@ -39,7 +39,7 @@ export const createOrder = async (req: Request, res: Response) => {
     const order = new Order({
         farmer: product.farmer,
         buyer:  user.id,
-        product: [prod?.id],
+        product: [prod?.i
         totalPrice: 12,
 
     })
@@ -73,3 +73,43 @@ export const createOrder = async (req: Request, res: Response) => {
 export const getAll = async (req: Request, res: Response) => {
 
 }
+
+import { Lucid, Blockfrost } from "@lucid-evolution/lucid";
+ 
+const lucid = await Lucid(
+  new Blockfrost("https://cardano-preprod.blockfrost.io/api/v0", "mainnetKFquTwmuxJxUrRdDP3zHQCOkXqMDr8fz"),
+  "Preprod"
+);
+const utxos = await lucid.utxosAt("addr_test...");
+
+import { generatePrivateKey } from "@lucid-evolution/lucid";
+ 
+const privateKey = generatePrivateKey(); // Bech32 encoded private key
+console.log(privateKey);
+
+lucid.selectWallet.fromPrivateKey(privateKey);
+
+const address = await lucid.wallet().address(); // Bech32 encodedaddress
+
+import { Lucid, Koios, generateSeedPhrase } from "@lucid-evolution/lucid";
+ 
+// Initialize Lucid with a provider
+const lucid = await Lucid(
+  new Koios("https://preprod.koios.rest/api/v1"),
+  "Preprod"
+);
+ 
+const seedPhrase = generateSeedPhrase(); // BIP-39
+lucid.selectWallet.fromSeed(seedPhrase); // Select a wallet for signing
+ 
+// Build, sign and submit transaction
+const tx = await lucid
+  .newTx()
+  .pay.ToAddress("addr_testa...", { lovelace: 5000000n }) // Pay 5 ADA to addr_testa...
+  .pay.ToAddress("addr_testb...", { lovelace: 5000000n }) // Pay 5 ADA to addr_testb...
+  .complete(); // Balance the transaction and initiate UTxO selection
+ 
+const signedTx = await tx.sign.withWallet().complete();
+const txHash = await signedTx.submit();
+ 
+console.log("Transaction Submitted:", txHash);
