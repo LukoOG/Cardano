@@ -6,7 +6,7 @@ import { startSession, Error } from "mongoose"
 
 import * as bcrypt from "bcrypt"
 import * as bip39 from "bip39"
-import * as jwt from "jsonwebtoken"
+    import * as jwt from "jsonwebtoken"
 import { Lucid, fromHex, toHex } from "@lucid-evolution/lucid";
 import { generateWallet, encryptMnemonic } from "../utils/wallet_mnemonics";
 
