@@ -39,7 +39,7 @@ validator placeholder {
         let funds_go_to_seller = 
         //checking certain conditions before determining funds are going to the seller
         if is_complete_message{
-          let input_value = self.spending_input.output.value
+          let input_value = self.inputs
 
           //check if the spender is valid
           let seller_outputs = self.transaction.outputs  |> filter (fn(output){ output.address == datum.address }) 

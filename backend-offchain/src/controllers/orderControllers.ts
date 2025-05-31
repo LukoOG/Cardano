@@ -2,9 +2,41 @@ import Order from "../models/Order";
 import { User, SafeUser, IUser } from "../models/User";
 import { Request, Response } from "express";
 
-import * as bcrypt from "bcrypt"
 import { IProduct, Product } from "../models/Product";
+import { Certificate } from "../models/Certificate";
 
+const development = process.env.NODE_ENV === "development"
+
+//demo endpoint for the creation of verified certificate
+export const createCertificate = async (req: Request, res: Response) => {
+    try {
+        const { farmer, location, type, SON, verified } = req.body
+
+        const user = await User.findById(farmer)
+        const certificate = new Certificate({
+            farmer: user ? user._id : "683a1b0494e7a70f9d3067dd",
+            location,
+            type, 
+            SON,
+            verified: verified ? true : false
+        })
+        await certificate.save()
+        res.status(200).json({certificate})
+        return
+    } catch(error){
+        if(development){
+            console.log(error)
+            res.status(500).json({error:"could not create certificate"})
+        }
+    }
+}
+
+export const startVerification = async (req: Request, res: Response) =>{
+    const product = 
+}
+
+
+//all of these endpoints have been overhauled in favor of the verification system. 
 export const getOrder = async (req: Request, res: Response) => {
     //adjust according to frontend needs
     try{

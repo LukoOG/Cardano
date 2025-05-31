@@ -3,35 +3,55 @@ import { Product } from "../models/Product";
 import { Request, Response } from "express";
 
 //api endpoints
+//rebuilt createproduct endpoint
 export const createProduct = async(req: Request, res: Response) => {
     try{
-                const { name, description, price, stock, category, farmer, weight} = req.body;
-        // const imageUrl = req.file ? req.file.path : null; Updated to multiple files per product
-        const images = req.files ? req.files : null;
+        //mint NFT and get ID
 
-        let imageUrl: string[] = []
-        if (images){
-            for(let i = 0; i<=images.length-1; i++){
-                imageUrl.push(images[i].path)
-            }
-        }
-        
+
+        const productData = req.body
         const product = new Product({
-            name,
-            description,
-            price,
-            stock,
-            farmer,
-            category,
-            weight,
-            imgUrl: imageUrl,
+            ...productData
+            // nftID: 
         })
+
         await product.save()
         res.status(200).json({product})
-    } catch(error){
-        res.status(500).json({error})
+    }catch(error){
+
     }
 }
+
+
+// export const createProduct = async(req: Request, res: Response) => {
+//     try{
+//                 const { name, description, price, stock, category, farmer, weight} = req.body;
+//         // const imageUrl = req.file ? req.file.path : null; Updated to multiple files per product
+//         const images = req.files ? req.files : null;
+
+//         let imageUrl: string[] = []
+//         if (images){
+//             for(let i = 0; i<=images.length-1; i++){
+//                 imageUrl.push(images[i].path)
+//             }
+//         }
+        
+//         const product = new Product({
+//             name,
+//             description,
+//             price,
+//             stock,
+//             farmer,
+//             category,
+//             weight,
+//             imgUrl: imageUrl,
+//         })
+//         await product.save()
+//         res.status(200).json({product})
+//     } catch(error){
+//         res.status(500).json({error})
+//     }
+// }
 
 export const createMultipleProducts = async(req: Request, res: Response) => {
     try{
