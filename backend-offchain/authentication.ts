@@ -27,7 +27,7 @@ app.post('/auth/tx', async (req, res) => {
     return;
   }
 
-  t
+  try {
     const tx = await lucid
       .newTx()
       .payToAddress(walletAddress, { lovelace: BigInt(1000000) }) // 1 ADA dummy tx
