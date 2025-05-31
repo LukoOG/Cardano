@@ -7,12 +7,14 @@ import MintHarvestForm from "@/components/MintHarvestForm";
 import CertifierDashboard from "@/components/CertifierDashboard";
 import QRCodeGenerator from "@/components/QRCodeGenerator";
 
+import { api_url } from "@/lib/utils";
+
 const Index = () => {
   const [userRole] = useState<"farmer" | "certifier">("farmer");
-  const [harvestCerts, setHarvestCerts] = useState(null)
+  const [harvestCerts, setHarvestCerts] = useState([])
   const [updCert, setUpdCert] = useState([])
 
-  const api_endpoint = "http://127.0.0.1:5000/order/all"
+  const api_endpoint = `${api_url}/order/all`
 
   useEffect(() => {
     const init = async () =>{
@@ -112,7 +114,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="certify" className="space-y-6">
-            <CertifierDashboard />
+            <CertifierDashboard harvestCerts={harvestCerts} />
           </TabsContent>
 
           <TabsContent value="qr" className="space-y-6">
