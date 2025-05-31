@@ -1,6 +1,7 @@
 use aiken/collection/list
 use aiken/crypto.{VerificationKeyHash}
 use aiken/primitive/string
+// use aiken/value
 use cardano/transaction.{OutputReference, Transaction}
 
 //Process
@@ -14,7 +15,6 @@ use cardano/transaction.{OutputReference, Transaction}
 pub type Datum {
   owner: VerificationKeyHash, //buyer
   receiver: VerificationKeyHash,
-  locked: ,
 }
 
 // for demo purposes, the redeemer will signal completion by passing a string "complete"
@@ -23,7 +23,7 @@ pub type EscrowRedeemer {
   msg: ByteArray,
 }
 
-validator release(
+validator placeholder {
   spend(
     datum: Option<Datum>,
     redeemer: EscrowRedeemer,
@@ -31,7 +31,7 @@ validator release(
     self: Transaction,
   ){
     when redeemer is{
-      EscrowRedeemer -> {
+      EscrowRedeemer(message) -> {
         //checking if the message passed is "complete"
         let is_complete_message = message == "complete"
 
@@ -39,16 +39,16 @@ validator release(
         let funds_go_to_seller = 
         //checking certain conditions before determining funds are going to the seller
         if is_complete_message{
-          let input_value = context.spending_input.output.value
+          let input_value = self.spending_input.output.value
 
           //check if the spender is valid
           let seller_outputs = self.transaction.outputs  |> filter (fn(output){ output.address == datum.address }) 
           let value_to_seller = seller_outputs
-          |> fold(fn(total, output) { total + output.value }, Value::zero())
+          |> fold(fn(total, output) { total + output.value }, 0)
 
           //returns true if the sender address matches and the funds going to seller is the minimum of what they expect
           //minus fees
-          value_to_seller => input_value
+          value_to_seller >= input_value
         } else {
           False
         }
@@ -59,4 +59,4 @@ validator release(
       }
     }
   }
-)
+}
