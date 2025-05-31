@@ -25,6 +25,22 @@ export const decryptMnemonic = (encrypted: string, password: string): string => 
     return decrypted;
 };
 
+
+
 /**
  * Generate a 24-word mnemonic and derive its corresponding private key.
+ * 
  */
+
+//functionalities for the minting
+//1. create an env file that contains the blockfrost api
+//2. mintNf.ts: The mintNFT.ts file contains a function that connects to the Cardano blockchain, builds and signs a transaction to mint an NFT with metadata (like name, image, and description), and submits it to the network, returning the transaction hash as confirmation.
+//3. server.ts: The server.ts file sets up an Express.js server that exposes an API endpoint (/mint) which receives NFT data from users, calls the mintNFT function to mint the NFT on the Cardano blockchain, and returns the transaction hash as a response.
+//4. The Postman request sends the NFT details (like name, image, and description) along with the user's private key and wallet address to the /mint endpoint, which triggers the NFT minting process on the Cardano blockchain.
+
+
+
+
+
+
+//finally make a request via postman
