@@ -65,6 +65,12 @@ export const certifyCertificate = async(req: Request, res: Response) => {
         if(!certificate){ res.status(400).json({error:"no certificate found"}); return }
         const user = await User.findById(certificate.farmer)
         const lucid_provider = await initLucid()
+
+        if (!req.body.certified){
+            const chain = "rejected"
+            res.status(200).json({ msg: "certificate rejected", chain })
+            return
+        }
         const tokenName = `NFT-00${getRandomID(1, 9)}`
         const hash = await mintToken(
             lucid_provider,
@@ -74,9 +80,10 @@ export const certifyCertificate = async(req: Request, res: Response) => {
         )
         await Certificate.findByIdAndUpdate(certificate._id, {
             tokenName,
-            chainId: hash
+            chainId: hash ? hash : ""
         })
-        res.status(200).json({ msg: "certificate certified", hash})
+        const chain = hash ? hash : "not enough funds"
+        res.status(200).json({ msg: "certificate certified", chain })
     }catch(error){
         res.status(500).json({error:"could not create certificate"})
     }

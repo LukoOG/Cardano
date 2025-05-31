@@ -9,9 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
+import { api_url } from "@/lib/utils";
+
 interface mintForm {
   setUpdCert: (value: any)=>void
 }
+
+const api_endpoint = `${api_url}/order/create`
 
 const MintHarvestForm = (
   { 
@@ -34,7 +38,7 @@ const MintHarvestForm = (
     e.preventDefault();
     setIsLoading(true);
 
-    const res = await fetch("http://127.0.0.1:5000/order/create", {
+    const res = await fetch(api_endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

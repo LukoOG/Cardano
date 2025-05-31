@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import HarvestReviewDetails from "./HarvestReviewDetails";
 
+import { api_url } from "@/lib/utils";
+
 interface PendingHarvest {
   id: string;
   cropType: string;
@@ -33,6 +35,7 @@ const CertifierDashboard = ({ harvestCerts }) => {
   const [selectedHarvest, setSelectedHarvest] = useState<PendingHarvest | null>(null);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   console.log(harvestCerts)
+  let today = new Date().toLocaleDateString()
   
   const [pendingHarvests] = useState<PendingHarvest[]>([
     {
@@ -48,7 +51,17 @@ const CertifierDashboard = ({ harvestCerts }) => {
   ]);
 
   const handleCertify = async (id: string) => {
-    const res = await (`${api_url}/order/certify`)
+    const res = await (`${api_url}/order/certify`, {
+      method: "PUT",
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({
+        certified: true,
+        certifiedBy: "National Food and Drugs Association of Nigeria",
+        status: "certified"
+      })
+    })
     toast({
       title: "Harvest Certified",
       description: `Harvest record ${id} has been successfully certified and is now traceable.`,
@@ -56,7 +69,16 @@ const CertifierDashboard = ({ harvestCerts }) => {
   };
 
   const handleReject = async (id: string) => {
-    const res = await (`${api_url}/order/certify`)
+    const res = await fetch( `${api_url}/order/certify/${id}` , {
+      method: "PUT",
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({
+        certified: false,
+        status: "rejected"
+      })
+    })
     toast({
       title: "Harvest Rejected",
       description: `Harvest record ${id} has been rejected. Farmer has been notified.`,
@@ -177,7 +199,7 @@ const CertifierDashboard = ({ harvestCerts }) => {
             ))}
           </div>
 
-                    <div className="space-y-4">
+          <div className="space-y-4">
             { harvestCerts && harvestCerts.map((harvest) => (
               <div key={harvest._id} className="border border-farmfi-green-100 rounded-lg p-4 bg-farmfi-green-50/30">
                 <div className="flex justify-between items-start mb-3">
@@ -205,7 +227,7 @@ const CertifierDashboard = ({ harvestCerts }) => {
                   </div>
                   <div>
                     <p className="font-medium text-gray-700">Submitted</p>
-                    <p className="text-gray-600">{harvest.submittedDate}</p>
+                    <p className="text-gray-600">{today}</p>
                   </div>
                 </div>
 
