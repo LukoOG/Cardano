@@ -10,15 +10,16 @@ const development = process.env.NODE_ENV === "development"
 //demo endpoint for the creation of verified certificate
 export const createCertificate = async (req: Request, res: Response) => {
     try {
-        const { farmer, location, type, SON, verified } = req.body
+        const { farmer, name, location, type, certified, quantity } = req.body
 
         const user = await User.findById(farmer)
         const certificate = new Certificate({
             farmer: user ? user._id : "683a1b0494e7a70f9d3067dd",
+            name,
             location,
-            type, 
-            SON,
-            verified: verified ? true : false
+            type,
+            quantity: quantity ? quantity : 200,
+            certified: certified ? true : false
         })
         await certificate.save()
         res.status(200).json({certificate})
@@ -37,15 +38,13 @@ export const startVerification = async (req: Request, res: Response) =>{
 
 
 //all of these endpoints have been overhauled in favor of the verification system. 
-export const getOrder = async (req: Request, res: Response) => {
+
+export const getAllCertificates = async (req: Request, res: Response) => {
     //adjust according to frontend needs
     try{
-        const order = await Order.findById( req.params.id )
-
-        if(!order){
-            res.status(400).json({msg: "Order not found"})
-        }
-        res.status(200).json({order})
+        // const order = await Order.findById( req.params.id )
+        const certificates = await Certificate.find().populate("farmer")
+        res.status(200).json(certificates)
     } catch(err:unknown){
         console.log(err)
         res.status(400).json({error:err})
