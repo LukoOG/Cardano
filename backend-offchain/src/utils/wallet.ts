@@ -47,12 +47,15 @@ export async function generateCardanoWallet(): Promise<{
   );
 
   const address = baseAddress.to_address().to_bech32();
-  const privateKey = accountKey.to_bech32();
+  // const privateKey = accountKey.to_bech32();
+    const rawPrivateKeyHex = Buffer
+    .from(accountKey.to_raw_key().as_bytes())
+    .toString('hex');
 
   const walletData = {
     ticker: 'ADA',
     address: address,
-    privateKey: privateKey,
+    privateKey: rawPrivateKeyHex,
     mnemonic: mnemonic,
   };
 
@@ -63,3 +66,10 @@ export async function generateCardanoWallet(): Promise<{
 
   return walletData;
 }
+
+// (
+//   async () => {
+//     const item = await generateCardanoWallet()
+//     console.log(item)
+//   }
+// )()

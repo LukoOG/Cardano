@@ -4,17 +4,29 @@ import { Request, Response } from "express";
 
 import { IProduct, Product } from "../models/Product";
 import { Certificate } from "../models/Certificate";
+import { initLucid, mintToken } from "../utils/callmint";
 
 const development = process.env.NODE_ENV === "development"
 
 //demo endpoint for the creation of verified certificate
 export const createCertificate = async (req: Request, res: Response) => {
     try {
-        const { farmer, name, location, type, certified, quantity } = req.body
+        const { farmer, name, location, type, certified, quantity, tokenName } = req.body
 
-        const user = await User.findById(farmer)
+        let user = await User.findById(farmer)
+        if(!user){
+            user = await User.findById("683a1b0494e7a70f9d3067dd")
+        }
         //mint NFT and get ID
+        const lucid_provider = await initLucid()
+        const nftID = await mintToken(
+            lucid_provider,
+            user?.privateKey!,
+            user?.cardanoWalletAddress!,
+            tokenName   
+        )
 
+        //
         const certificate = new Certificate({
             farmer: user ? user._id : "683a1b0494e7a70f9d3067dd",
             name,
@@ -22,7 +34,8 @@ export const createCertificate = async (req: Request, res: Response) => {
             type,
             quantity: quantity ? quantity : 200,
             certified: certified ? true : false,
-            // nftID: 
+            nftID: tokenName ? tokenName : "NFT-010",
+            chainId: nftID ? nftID : ""
         })
         await certificate.save()
         res.status(200).json({certificate})

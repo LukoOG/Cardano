@@ -1,7 +1,5 @@
-//The mintNFT.ts file contains a function that connects to the Cardano blockchain, builds and signs a transaction to mint an NFT with metadata (like name, image, and description), and submits it to the network, returning the transaction hash as confirmation.
-import { Lucid } from "@lucid-evolution/lucid";
-import * as dotenv from "dotenv";
-dotenv.config();
+import { Lucid, Blockfrost } from "@lucid-evolution/lucid";
+import "dotenv/config"
 
 const API_KEY = process.env.BLOCKFROST_API_KEY!;
 const NETWORK = process.env.NETWORK || "Mainnet";
@@ -15,9 +13,9 @@ export async function mintNFT(
     description: string;
   }
 ) {
-  const lucid = await Lucid.new(
+  const lucid = await Lucid(
     new Blockfrost("https://cardano-mainnet.blockfrost.io/api/v0", API_KEY),
-    NETWORK
+    "Preprod"
   );
 //how to connect testnet to blockfrost
   await lucid.selectWalletFromPrivateKey(walletPrivateKey);
