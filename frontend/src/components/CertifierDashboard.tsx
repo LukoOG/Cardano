@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { CheckCircle, X, Eye, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import HarvestReviewDetails from "./HarvestReviewDetails";
 
 interface PendingHarvest {
   id: string;
@@ -19,36 +19,59 @@ interface PendingHarvest {
 
 const CertifierDashboard = () => {
   const { toast } = useToast();
+  const [selectedHarvest, setSelectedHarvest] = useState<PendingHarvest | null>(null);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  
   const [pendingHarvests] = useState<PendingHarvest[]>([
     {
       id: "NFT-001",
-      cropType: "Organic Tomatoes",
-      farmName: "Green Valley Farm",
-      location: "California, USA",
+      cropType: "Cocoa Beans",
+      farmName: "Adebayo Cocoa Estate",
+      location: "Ondo State, Nigeria",
       harvestDate: "2024-05-28",
-      quantity: "500 kg",
-      farmer: "John Smith",
+      quantity: "2.5 tons",
+      farmer: "Adebayo Oluwaseun",
       submittedDate: "2024-05-29"
     },
     {
       id: "NFT-002",
-      cropType: "Lettuce",
-      farmName: "Sunny Acres",
-      location: "Oregon, USA",
+      cropType: "Palm Oil",
+      farmName: "Okafor Palm Plantation",
+      location: "Cross River State, Nigeria",
       harvestDate: "2024-05-27",
-      quantity: "200 kg",
-      farmer: "Maria Garcia",
+      quantity: "1.8 tons",
+      farmer: "Chioma Okafor",
       submittedDate: "2024-05-28"
     },
     {
       id: "NFT-003",
-      cropType: "Carrots",
-      farmName: "Heritage Farms",
-      location: "Iowa, USA",
+      cropType: "Cashew Nuts",
+      farmName: "Bello Cashew Farm",
+      location: "Kwara State, Nigeria",
       harvestDate: "2024-05-26",
-      quantity: "1.2 tons",
-      farmer: "David Chen",
+      quantity: "800 kg",
+      farmer: "Ibrahim Bello",
       submittedDate: "2024-05-27"
+    },
+    {
+      id: "NFT-004",
+      cropType: "Rubber Latex",
+      farmName: "Ikechukwu Rubber Estate",
+      location: "Delta State, Nigeria",
+      harvestDate: "2024-05-25",
+      quantity: "1.2 tons",
+      farmer: "Ikechukwu Okwu",
+      submittedDate: "2024-05-26"
+    },
+    {
+      id: "NFT-005",
+      cropType: "Cotton",
+      farmName: "Musa Cotton Fields",
+      location: "Kaduna State, Nigeria",
+      harvestDate: "2024-05-24",
+      quantity: "950 kg",
+      farmer: "Musa Abdullahi",
+      submittedDate: "2024-05-25"
     }
   ]);
 
@@ -65,6 +88,11 @@ const CertifierDashboard = () => {
       description: `Harvest record ${id} has been rejected. Farmer has been notified.`,
       variant: "destructive",
     });
+  };
+
+  const handleReviewDetails = (harvest: PendingHarvest) => {
+    setSelectedHarvest(harvest);
+    setIsReviewOpen(true);
   };
 
   return (
@@ -161,7 +189,12 @@ const CertifierDashboard = () => {
                     <X className="h-4 w-4 mr-1" />
                     Reject
                   </Button>
-                  <Button size="sm" variant="outline" className="border-farmfi-green-200 text-farmfi-green-700">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="border-farmfi-green-200 text-farmfi-green-700"
+                    onClick={() => handleReviewDetails(harvest)}
+                  >
                     <Eye className="h-4 w-4 mr-1" />
                     Review Details
                   </Button>
@@ -171,6 +204,18 @@ const CertifierDashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Review Details Modal */}
+      {selectedHarvest && (
+        <HarvestReviewDetails
+          isOpen={isReviewOpen}
+          onClose={() => {
+            setIsReviewOpen(false);
+            setSelectedHarvest(null);
+          }}
+          harvest={selectedHarvest}
+        />
+      )}
     </div>
   );
 };

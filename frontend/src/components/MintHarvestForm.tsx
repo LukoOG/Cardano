@@ -48,8 +48,9 @@ const MintHarvestForm = () => {
   };
 
   const cropOptions = [
-    "Tomatoes", "Lettuce", "Carrots", "Potatoes", "Corn", "Wheat", 
-    "Rice", "Soybeans", "Apples", "Oranges", "Other"
+    "Cocoa Beans", "Palm Oil", "Cashew Nuts", "Rubber Latex", "Cotton", 
+    "Groundnuts", "Sesame Seeds", "Ginger", "Kolanut", "Coffee Beans",
+    "Sugar Cane", "Tobacco", "Shea Butter", "Cassava", "Yam", "Other"
   ];
 
   return (
@@ -65,10 +66,10 @@ const MintHarvestForm = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="cropType">Crop Type</Label>
+              <Label htmlFor="cropType">Cash Crop Type</Label>
               <Select value={formData.cropType} onValueChange={(value) => setFormData({...formData, cropType: value})}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select crop type" />
+                  <SelectValue placeholder="Select cash crop type" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
                   {cropOptions.map((crop) => (
@@ -84,7 +85,7 @@ const MintHarvestForm = () => {
                 id="farmName"
                 value={formData.farmName}
                 onChange={(e) => setFormData({...formData, farmName: e.target.value})}
-                placeholder="Enter farm name"
+                placeholder="e.g., Adebayo Cocoa Estate"
                 required
               />
             </div>
@@ -99,7 +100,7 @@ const MintHarvestForm = () => {
                   id="location"
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
-                  placeholder="City, State/Province, Country"
+                  placeholder="e.g., Ondo State, Nigeria"
                   className="pl-10"
                   required
                 />
@@ -148,10 +149,10 @@ const MintHarvestForm = () => {
                 <SelectContent className="bg-white">
                   <SelectItem value="kg">Kilograms (kg)</SelectItem>
                   <SelectItem value="tons">Tons</SelectItem>
-                  <SelectItem value="lbs">Pounds (lbs)</SelectItem>
-                  <SelectItem value="bushels">Bushels</SelectItem>
-                  <SelectItem value="boxes">Boxes</SelectItem>
+                  <SelectItem value="bags">Bags (100kg)</SelectItem>
+                  <SelectItem value="baskets">Baskets</SelectItem>
                   <SelectItem value="crates">Crates</SelectItem>
+                  <SelectItem value="liters">Liters</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -163,7 +164,7 @@ const MintHarvestForm = () => {
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
-              placeholder="Organic certification, growing methods, storage conditions, etc."
+              placeholder="Processing methods, quality grade, storage conditions, organic certification, etc."
               rows={3}
             />
           </div>

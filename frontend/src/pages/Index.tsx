@@ -13,32 +13,32 @@ const Index = () => {
   const sampleHarvests = [
     {
       id: "NFT-001",
-      cropType: "Organic Tomatoes",
-      farmName: "Green Valley Farm",
-      location: "California, USA",
+      cropType: "Cocoa Beans",
+      farmName: "Adebayo Cocoa Estate",
+      location: "Ondo State, Nigeria",
       harvestDate: "2024-05-28",
-      quantity: "500 kg",
+      quantity: "2.5 tons",
       status: "certified" as const,
-      certifier: "AgriCert Solutions"
+      certifier: "Nigerian Agricultural Certification"
     },
     {
       id: "NFT-002",
-      cropType: "Lettuce",
-      farmName: "Sunny Acres",
-      location: "Oregon, USA",
+      cropType: "Palm Oil",
+      farmName: "Okafor Palm Plantation",
+      location: "Cross River State, Nigeria",
       harvestDate: "2024-05-27",
-      quantity: "200 kg",
+      quantity: "1.8 tons",
       status: "pending" as const
     },
     {
       id: "NFT-003",
-      cropType: "Carrots",
-      farmName: "Heritage Farms",
-      location: "Iowa, USA",
+      cropType: "Cashew Nuts",
+      farmName: "Bello Cashew Farm",
+      location: "Kwara State, Nigeria",
       harvestDate: "2024-05-26",
-      quantity: "1.2 tons",
+      quantity: "800 kg",
       status: "certified" as const,
-      certifier: "Organic Validators Inc"
+      certifier: "West Africa Organic Validators"
     }
   ];
 
