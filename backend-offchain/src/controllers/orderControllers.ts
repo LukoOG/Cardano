@@ -13,13 +13,16 @@ export const createCertificate = async (req: Request, res: Response) => {
         const { farmer, name, location, type, certified, quantity } = req.body
 
         const user = await User.findById(farmer)
+        //mint NFT and get ID
+
         const certificate = new Certificate({
             farmer: user ? user._id : "683a1b0494e7a70f9d3067dd",
             name,
             location,
             type,
             quantity: quantity ? quantity : 200,
-            certified: certified ? true : false
+            certified: certified ? true : false,
+            // nftID: 
         })
         await certificate.save()
         res.status(200).json({certificate})
@@ -30,10 +33,6 @@ export const createCertificate = async (req: Request, res: Response) => {
             res.status(500).json({error:"could not create certificate"})
         }
     }
-}
-
-export const startVerification = async (req: Request, res: Response) =>{
-    const product = 
 }
 
 
