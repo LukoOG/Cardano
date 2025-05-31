@@ -51,7 +51,7 @@ const CertifierDashboard = ({ harvestCerts }) => {
   ]);
 
   const handleCertify = async (id: string) => {
-    const res = await (`${api_url}/order/certify`, {
+    const res = await fetch(`${api_url}/order/certify`, {
       method: "PUT",
       headers:{
         'Content-Type':'application/json'
@@ -62,9 +62,10 @@ const CertifierDashboard = ({ harvestCerts }) => {
         status: "certified"
       })
     })
+    const data = await res.json()
     toast({
       title: "Harvest Certified",
-      description: `Harvest record ${id} has been successfully certified and is now traceable.`,
+      description: `Harvest record ${data.hash} has been successfully certified and is now traceable.`,
     });
   };
 
@@ -79,9 +80,10 @@ const CertifierDashboard = ({ harvestCerts }) => {
         status: "rejected"
       })
     })
+    const data = await res.json()
     toast({
       title: "Harvest Rejected",
-      description: `Harvest record ${id} has been rejected. Farmer has been notified.`,
+      description: `Harvest record ${data.chain} has been rejected. Farmer has been notified.`,
       variant: "destructive",
     });
   };
@@ -142,7 +144,7 @@ const CertifierDashboard = ({ harvestCerts }) => {
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="font-semibold text-farmfi-green-700">{harvest.cropType}</h3>
-                    <p className="text-sm text-gray-600">by {harvest.farmer} - {harvest.farmName}</p>
+                    <p className="text-sm text-gray-600">by Yinka - {harvest.farmName}</p>
                   </div>
                   <Badge variant="outline" className="border-farmfi-earth-500 text-farmfi-earth-600">
                     {harvest.id}
@@ -199,13 +201,13 @@ const CertifierDashboard = ({ harvestCerts }) => {
             ))}
           </div>
 
-          <div className="space-y-4">
+
             { harvestCerts && harvestCerts.map((harvest) => (
               <div key={harvest._id} className="border border-farmfi-green-100 rounded-lg p-4 bg-farmfi-green-50/30">
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="font-semibold text-farmfi-green-700">{harvest.type}</h3>
-                    <p className="text-sm text-gray-600">by {harvest.farmer} - {harvest.name}</p>
+                    <p className="text-sm text-gray-600"> {harvest.farmer.name} - {harvest.name}</p>
                   </div>
                   <Badge variant="outline" className="border-farmfi-earth-500 text-farmfi-earth-600">
                     {harvest.id}
@@ -219,7 +221,7 @@ const CertifierDashboard = ({ harvestCerts }) => {
                   </div>
                   <div>
                     <p className="font-medium text-gray-700">Harvest Date</p>
-                    <p className="text-gray-600">{harvest.harvestDate}</p>
+                    <p className="text-gray-600">today</p>
                   </div>
                   <div>
                     <p className="font-medium text-gray-700">Quantity</p>
@@ -260,7 +262,6 @@ const CertifierDashboard = ({ harvestCerts }) => {
                 </div>
               </div>
             ))}
-          </div>
         </CardContent>
       </Card>
 
