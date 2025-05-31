@@ -142,7 +142,7 @@ const HarvestDetailsModal = ({ isOpen, onClose, harvest }: HarvestDetailsModalPr
               <h4 className="font-medium text-farmfi-green-700 mb-2">Blockchain Information</h4>
               <div className="text-sm space-y-1">
                 <div>
-                  <span className="font-medium">Transaction Hash:</span>
+                  <span className="font-medium">NFT Hash:</span>
                   <span className="ml-2 text-gray-700 font-mono">0x1a2b3c4d5e6f7g8h9i0j...</span>
                 </div>
                 <div>
@@ -151,7 +151,7 @@ const HarvestDetailsModal = ({ isOpen, onClose, harvest }: HarvestDetailsModalPr
                 </div>
                 <div>
                   <span className="font-medium">Network:</span>
-                  <span className="ml-2 text-gray-700">Ethereum Mainnet</span>
+                  <span className="ml-2 text-gray-700">Cardano Mainnet</span>
                 </div>
               </div>
             </div>
