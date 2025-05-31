@@ -11,7 +11,7 @@ const development = process.env.NODE_ENV === "development"
 //demo endpoint for the creation of verified certificate
 export const createCertificate = async (req: Request, res: Response) => {
     try {
-        const { farmer, name, location, type, certified, quantity, tokenName } = req.body
+        const { farmer, farmName: name, location, cropType: type, certified, quantity } = req.body
 
         let user = await User.findById(farmer)
         if(!user){

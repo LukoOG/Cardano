@@ -13,6 +13,7 @@ const app = express();
 
 const allowedOrigins = [
     "http://localhost:3000", // Dev Frontend
+    "http://localhost:8080", // Dev Frontend
     "https://farm-fi.vercel.app", // ✅ Production Frontend
   ];
   

@@ -8,7 +8,7 @@ router.get("/all", getAllCertificates)
 router.post("/create", createCertificate)
 router.put("/update/:id", updateCertificate)
 router.put("/certify/:id", certifyCertificate)
-router.delete("/delete/:id", createCertificate)
+// router.delete("/delete/:id", deleteCertificate)
 // router.post()
 
 export default router

@@ -39,10 +39,12 @@ export async function mintToken(
   
   // Create a simple minting policy (1-time signature-based)
   console.log("building script")
+
   const policy = scriptFromNative({
     type: "sig", 
     keyHash: paymentCredentialOf(await lucid.wallet().address()).hash ,
   });
+  
   const policyId = mintingPolicyToId(policy);
   const assetName = fromText(tokenName);
   const unit = policyId + assetName;

@@ -9,8 +9,8 @@ import QRCodeModal from "./QRCodeModal";
 
 interface HarvestCardProps {
   id: string;
-  cropType: string;
-  farmName: string;
+  type: string;
+  name: string;
   location: string;
   harvestDate: string;
   quantity: string;
@@ -18,10 +18,10 @@ interface HarvestCardProps {
   certifier?: string;
 }
 
-const HarvestCard = ({
+const HarvestCardBack = ({
   id,
-  cropType,
-  farmName,
+  type,
+  name,
   location,
   harvestDate = new Date().toLocaleDateString(),
   quantity,
@@ -33,8 +33,8 @@ const HarvestCard = ({
 
   const harvestData = {
     id,
-    cropType,
-    farmName,
+    type,
+    name,
     location,
     harvestDate,
     quantity,
@@ -59,7 +59,7 @@ const HarvestCard = ({
         <CardHeader className="pb-3">
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="text-lg text-farmfi-green-700">{cropType}</CardTitle>
+              <CardTitle className="text-lg text-farmfi-green-700">{type}</CardTitle>
               <p className="text-sm text-farmfi-green-600">NFT ID: {id}</p>
             </div>
             {getStatusBadge()}
@@ -70,7 +70,7 @@ const HarvestCard = ({
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="flex items-center space-x-2">
               <MapPin className="h-4 w-4 text-farmfi-green-500" />
-              <span className="text-gray-600">{farmName}</span>
+              <span className="text-gray-600">{name}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Calendar className="h-4 w-4 text-farmfi-green-500" />
@@ -125,4 +125,4 @@ const HarvestCard = ({
   );
 };
 
-export default HarvestCard;
+export default HarvestCardBack;

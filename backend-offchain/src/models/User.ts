@@ -40,7 +40,7 @@ const UserSchema = new Schema<IUser>({
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true, unique: true},
     password: { type: String, required: true },
-    role: { type: String, enum: ["buyer", "farmer", "logistics_admin"], required: true },
+    role: { type: String, enum: ["buyer", "farmer", "certifier"] as const, required: true },
     NIN: { type: String,  required: true },
     location: { type: {
       home: String,

@@ -1,14 +1,29 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/Header";
 import HarvestCard from "@/components/HarvestCard";
+import HarvestCardBack from "@/components/HarvestCardBack";
 import MintHarvestForm from "@/components/MintHarvestForm";
 import CertifierDashboard from "@/components/CertifierDashboard";
 import QRCodeGenerator from "@/components/QRCodeGenerator";
 
 const Index = () => {
   const [userRole] = useState<"farmer" | "certifier">("farmer");
+  const [harvestCerts, setHarvestCerts] = useState(null)
+
+  const api_endpoint = "http://127.0.0.1:5000/order/all"
+
+  useEffect(() => {
+    const init = async () =>{
+      const harvestCerts = await fetch(api_endpoint)
+      const data = await harvestCerts.json()
+      setHarvestCerts(data)
+    }
+
+    init()
+  },[])
+
+  console.log(harvestCerts)
 
   const sampleHarvests = [
     {
@@ -22,7 +37,7 @@ const Index = () => {
       certifier: "Nigerian Agricultural Certification"
     },
     {
-      id: "NFT-002",
+      id: "",
       cropType: "Palm Oil",
       farmName: "Okafor Palm Plantation",
       location: "Cross River State, Nigeria",
@@ -77,6 +92,15 @@ const Index = () => {
               {sampleHarvests.map((harvest) => (
                 <div key={harvest.id} className="animate-fade-in">
                   <HarvestCard {...harvest} />
+                </div>
+              ))}
+            </div>
+
+            {/* backend integrated */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {harvestCerts && harvestCerts.map((harvest) => (
+                <div key={harvest._id} className="animate-fade-in">
+                  <HarvestCardBack {...harvest} />
                 </div>
               ))}
             </div>

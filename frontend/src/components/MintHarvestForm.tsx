@@ -26,12 +26,22 @@ const MintHarvestForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    const res = await fetch("http://127.0.0.1:5000/order/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+
+    const data = await res.json()
     
     // Simulate NFT minting process
     setTimeout(() => {
       toast({
         title: "Harvest NFT Minted Successfully!",
-        description: `Your ${formData.cropType} harvest record has been created and is pending certification.`,
+        description: `Your ${data.type} harvest record has been created and is pending certification.`,
       });
       setIsLoading(false);
       setFormData({
