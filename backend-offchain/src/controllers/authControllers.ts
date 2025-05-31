@@ -5,9 +5,7 @@ import { User, IUser, SafeUser } from "../models/User";
 import { startSession, Error } from "mongoose"
 
 import * as bcrypt from "bcrypt"
-import * as bip39 from "bip39"
-    import * as jwt from "jsonwebtoken"
-import { Lucid, fromHex, toHex } from "@lucid-evolution/lucid";
+import * as jwt from "jsonwebtoken"
 import { generateCardanoWallet } from "../utils/wallet"
 import { encryptMnemonic } from "../utils/wallet_mnemonics";
 
@@ -16,6 +14,7 @@ import { encryptMnemonic } from "../utils/wallet_mnemonics";
 
 import "dotenv/config";
 import { Farm } from "../models/Farm";
+import { initLucid } from "../utils/callmint";
 
 
 const development = process.env.NODE_ENV === 'development'
@@ -47,7 +46,9 @@ export const register = async (req: Request, res: Response) => {
         //generating user wallet details
         // npm i @emurgo/cardano-serialization-lib-nodejs
 
-        const { ticker, address: cardanoWalletAddress, privateKey, mnemonic } = await generateCardanoWallet()
+        const lucid = await initLucid()
+
+        const { address: cardanoWalletAddress, privateKey } = await generateCardanoWallet(lucid)
 
         //other definitions
         const fullname = `${firstName} ${lastName}`
@@ -64,7 +65,7 @@ export const register = async (req: Request, res: Response) => {
             role,
             NIN: nin,
             location,
-            mnemonic: encryptMnemonic(mnemonic, password), //store the encrypted mnemonic
+            mnemonic: "",// encryptMnemonic(mnemonic, password), //store the encrypted mnemonic, future implementation
             privateKey, //to allow easier reconstrucion of the wallet keypair on the frontend for demo purposes
                         //will deprecate and update to derive keypair from encrypted mnemonic
             imgUrl: "https://res.cloudinary.com/dfxieiol1/image/upload/v1748355861/default-pici_rxkswj.png", //default profile picture
@@ -102,7 +103,7 @@ export const register = async (req: Request, res: Response) => {
         const payload = { user: userObj };
         const token = jwt.sign(payload, process.env.TOKEN_SECRET!, { expiresIn: "7d" });
     
-        res.json({ token, mnemonic });
+        res.json({ token}) //, mnemonic });
         
     } catch(error){
         // console.log("this is the: ",error);

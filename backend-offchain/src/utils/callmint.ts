@@ -34,9 +34,11 @@ export async function mintToken(
   quantity: bigint = 1n
 ): Promise<string> {
   // Select wallet from private key
+  console.log("picking wallet")
   lucid.selectWallet.fromPrivateKey(privateKey)
-
+  
   // Create a simple minting policy (1-time signature-based)
+  console.log("building script")
   const policy = scriptFromNative({
     type: "sig", 
     keyHash: paymentCredentialOf(await lucid.wallet().address()).hash ,
@@ -60,21 +62,21 @@ export async function mintToken(
   return txHash;
 }
 
-function privateKeyToBech32(privateKeyHex: string): string {
-  const pk = PrivateKey.from_normal_bytes(Buffer.from(privateKeyHex, "hex"));
-  return pk.to_bech32(); // returns `ed25519_sk...`
-}
+
+//testing the mint. Comment out in production
 
 // Example usage
 // (async () => {
-//   const lucid = await initLucid();
+// try {  const lucid = await initLucid();
 
-//   const PRIVATE_KEY = "60e378da5d918281d49d1710587c1c0c895469cecb96c319ccac097c5d3925536e20bd420cbb6dd395c3280a06b9b1d3fa816924387017cee858da54237afd06"; // Bech32 or Hex format
-//   const RECEIVER_ADDRESS = "addr1qxtk26g6x4f2uldjn8eenyqy73hg5q7tj93pffd2ru80jvqhv0fljw3q6darskalpwppllk0jfae2tcmrefcfwn35x7qea7kkk"; // Preprod wallet address
+//   const PRIVATE_KEY = "xprv13rxjk62mslqaxvaxdyxpr2j8xcrl88ks2pxw2nvunn58d6e4waxy9rjlvmqz4pf5ms5nqu4yn20rvk9wy5sf6mj3ms60h4dyah3xjkj8xnr8589w7t9el9vw6utm44vnujda96rzy9kmtmeh7su3eshdyssmhvr5"; // Bech32 or Hex format
+//   const RECEIVER_ADDRESS = "addr_test1qr2fmqlr2q47zhums0550mw4xtffszwkeu2cqrgdd5m5n5jw7wvxzjm4nssrm5rwjur9suc469p584hvgn9s29jy8npq9q078k"; // Preprod wallet address
 //   const TOKEN_NAME = "MyTestToken";
-//   const bech_priv = privateKeyToBech32(PRIVATE_KEY)
-//   console.log(bech_priv)
+//   // const bech_priv = privateKeyToBech32(PRIVATE_KEY)
+//   // console.log(bech_priv)
 
-//   const txHash = await mintToken(lucid, bech_priv, RECEIVER_ADDRESS, TOKEN_NAME);
-//   console.log("Minted token in transaction:", txHash);
+//   const txHash = await mintToken(lucid, PRIVATE_KEY, RECEIVER_ADDRESS, TOKEN_NAME);
+//   console.log("Minted token in transaction:", txHash);} catch(error){
+//     console.log(error)
+//   }
 // })();

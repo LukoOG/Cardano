@@ -18,14 +18,6 @@ export const createCertificate = async (req: Request, res: Response) => {
             user = await User.findById("683a1b0494e7a70f9d3067dd")
         }
         //mint NFT and get ID
-        const lucid_provider = await initLucid()
-        const nftID = await mintToken(
-            lucid_provider,
-            user?.privateKey!,
-            user?.cardanoWalletAddress!,
-            tokenName   
-        )
-
         //
         const certificate = new Certificate({
             farmer: user ? user._id : "683a1b0494e7a70f9d3067dd",
@@ -34,8 +26,6 @@ export const createCertificate = async (req: Request, res: Response) => {
             type,
             quantity: quantity ? quantity : 200,
             certified: certified ? true : false,
-            nftID: tokenName ? tokenName : "NFT-010",
-            chainId: nftID ? nftID : ""
         })
         await certificate.save()
         res.status(200).json({certificate})
@@ -63,64 +53,38 @@ export const getAllCertificates = async (req: Request, res: Response) => {
     }
 }
 
-//ability to process multpled products from different farmers
-export const createOrder = async (req: Request, res: Response) => {
-    const { buyer, product, password } = req.body //expected information
-    //cases to abort operation
-    const user = await User.findOne({ email:buyer }) as IUser;
-    const farmerExists: boolean = product?.farmer && await User.findById(product.farmer)
+function getRandomID(min: number, max: number) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
-    if(!farmerExists || !user){
-        res.status(400).json({error: "invalid users"})
-        return;
+export const certifyCertificate = async(req: Request, res: Response) => {
+    try {
+        const certificate = await Certificate.findByIdAndUpdate(req.params.id, req.body, {new: true})
+        if(!certificate){ res.status(400).json({error:"no certificate found"}); return }
+        const user = await User.findById(certificate.farmer)
+        const lucid_provider = await initLucid()
+        const tokenName = `NFT-00${getRandomID(1, 9)}`
+        const hash = await mintToken(
+            lucid_provider,
+            user?.privateKey!,
+            user?.cardanoWalletAddress!,
+            tokenName   
+        )
+        await Certificate.findByIdAndUpdate(certificate._id, {
+            tokenName,
+            chainId: hash
+        })
+        res.status(200).json({ msg: "certificate certified", hash})
+    }catch(error){
+        res.status(500).json({error:"could not create certificate"})
     }
-
-    const prod = await Product.findById(product._id)
-
-    // const order = new Order({
-    //     farmer: product.farmer,
-    //     buyer:  user.id,
-    //     product: [prod?.i
-    //     totalPrice: 12,
-
-    // })
-
-    //get keypair; frontend should deal with extracting payment coin to maintaini decentralization
-    //TODO
-    //1.Get signer
-    //2. Get utxos
-    //3. Generate transaction with lucid and signerror"})
 }
 
-export const getAll = async (req: Request, res: Response) => {
-
+export const updateCertificate = async (req: Request, res: Response) => {
+    const certificate = await Certificate.findByIdAndUpdate(req.params.id, req.body, {new: true})
+    if(!certificate){
+        res.status(400).json({error:"certificate not found"})
+    }
 }
-
-
-
-// lucid.selectWallet.fromPrivateKey(privateKey);
-
-// const address = await lucid.wallet().address(); // Bech32 encodedaddress
-
-// import { Lucid, Koios, generateSeedPhrase } from "@lucid-evolution/lucid";
- 
-// // Initialize Lucid with a provider
-// const lucid = await Lucid(
-//   new Koios("https://preprod.koios.rest/api/v1"),
-//   "Preprod"
-// );
- 
-// const seedPhrase = generateSeedPhrase(); // BIP-39
-// lucid.selectWallet.fromSeed(seedPhrase); // Select a wallet for signing
- 
-// // Build, sign and submit transaction
-// const tx = await lucid
-//   .newTx()
-//   .pay.ToAddress("addr_testa...", { lovelace: 5000000n }) // Pay 5 ADA to addr_testa...
-//   .pay.ToAddress("addr_testb...", { lovelace: 5000000n }) // Pay 5 ADA to addr_testb...
-//   .complete(); // Balance the transaction and initiate UTxO selection
- 
-// const signedTx = await tx.sign.withWallet().complete();
-// const txHash = await signedTx.submit();
- 
-// console.log("Transaction Submitted:", txHash);

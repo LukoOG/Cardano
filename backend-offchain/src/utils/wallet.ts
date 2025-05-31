@@ -5,71 +5,42 @@ import {
   Credential
 } from '@emurgo/cardano-serialization-lib-nodejs';
 import * as bip39 from 'bip39';
-
+import { initLucid, mintToken } from './callmint'; 
+import { generatePrivateKey, LucidEvolution } from "@lucid-evolution/lucid";
 // Replace with your own database model or setup
 // You need to define and connect your own WalletModel to store the wallet data in a database
 // import WalletModel from '../models/Wallet';
 
 
-export async function generateCardanoWallet(): Promise<{
-  ticker: string;
+export async function generateCardanoWallet(lucid: LucidEvolution):Promise<{
   address: string;
-  privateKey: string;
-  mnemonic: string;
-}> {
-  const mnemonic = bip39.generateMnemonic();
-  const entropy = bip39.mnemonicToEntropy(mnemonic);
-  const rootKey = Bip32PrivateKey.from_bip39_entropy(Buffer.from(entropy, 'hex'), Buffer.from(''));
-
-  // Derivation path for external addresses in Cardano (m/1852'/1815'/0'/0/0)
-  const accountKey = rootKey
-    .derive(1852 | 0x80000000) // purpose
-    .derive(1815 | 0x80000000) // coin type
-    .derive(0 | 0x80000000) // account
-    .derive(0) // external chain
-    .derive(0); // first address
-
-  const stakeKey = rootKey
-    .derive(1852 | 0x80000000) // purpose
-    .derive(1815 | 0x80000000) // coin type
-    .derive(0 | 0x80000000) // account
-    .derive(2) // staking chain
-    .derive(0); // first staking address
-
-  const publicKey = accountKey.to_public();
-  const stakePublicKey = stakeKey.to_public();
-  const networkInfo = NetworkInfo.mainnet();
-
-  const baseAddress = BaseAddress.new(
-    networkInfo.network_id(),
-    Credential.from_keyhash(publicKey.to_raw_key().hash()),
-    Credential.from_keyhash(stakePublicKey.to_raw_key().hash())
-  );
-
-  const address = baseAddress.to_address().to_bech32();
+  privateKey: any;
+}>{
+  
   // const privateKey = accountKey.to_bech32();
-    const rawPrivateKeyHex = Buffer
-    .from(accountKey.to_raw_key().as_bytes())
-    .toString('hex');
+  // const address = baseAddress.to_address().to_bech32();
+  const privateKey = generatePrivateKey();
+  lucid.selectWallet.fromPrivateKey(privateKey)
+  const address = await lucid.wallet().address();
 
   const walletData = {
-    ticker: 'ADA',
     address: address,
-    privateKey: rawPrivateKeyHex,
-    mnemonic: mnemonic,
+    privateKey: privateKey,
   };
 
-  // Save wallet data to your own database
-  // Uncomment and replace this with your actual database save operation
-  // const wallet = new WalletModel(walletData);
-  // await wallet.save();
-
-  return walletData;
+  return walletData
 }
+
+
+// testing purposes. Comment out in production
 
 // (
 //   async () => {
-//     const item = await generateCardanoWallet()
+//     const lucid = await initLucid()
+//     console.log("wallets gotten")
+//     const item = await generateCardanoWallet(lucid)
 //     console.log(item)
+//     const out = await mintToken(lucid, item.privateKey, item.address, "test-token")
+//     console.log("tx hash", out)
 //   }
 // )()

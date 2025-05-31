@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 const status = [
     'pending',
     'certified',
+    'rejected',
 ] as const
 
 interface ICertificate extends Document{
@@ -16,6 +17,7 @@ interface ICertificate extends Document{
     nftID?: string;
     status: typeof status[number]
     chainId?: string;
+    storageId?: string;
 }
 
 const CertificateSchema = new Schema<ICertificate>({
@@ -28,7 +30,8 @@ const CertificateSchema = new Schema<ICertificate>({
     certifiedBy: { type: String },
     nftID: { type: String },
     status: { type: String, enum:status, default:'pending' },
-    chainId: { type: String } //Order transaction hash on-chain
+    chainId: { type: String }, //Order transaction hash on-chain
+    storageId: { type: String },
 }, { timestamps: true })
 
-export const Certificate = mongoose.model<ICertificate>("Order", CertificateSchema)
+export const Certificate = mongoose.model<ICertificate>("Certificate", CertificateSchema)
