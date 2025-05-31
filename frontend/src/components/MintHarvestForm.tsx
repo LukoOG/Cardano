@@ -9,7 +9,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
-const MintHarvestForm = () => {
+interface mintForm {
+  setUpdCert: (value: any)=>void
+}
+
+const MintHarvestForm = (
+  { 
+  setUpdCert 
+}:mintForm) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -35,13 +42,13 @@ const MintHarvestForm = () => {
       body: JSON.stringify(formData),
     })
 
-    const data = await res.json()
-    
+    const { certificate } = await res.json()
+    console.log(certificate)
     // Simulate NFT minting process
     setTimeout(() => {
       toast({
         title: "Harvest NFT Minted Successfully!",
-        description: `Your ${data.type} harvest record has been created and is pending certification.`,
+        description: `Your ${certificate.type} harvest record has been created and is pending certification.`,
       });
       setIsLoading(false);
       setFormData({
@@ -55,6 +62,7 @@ const MintHarvestForm = () => {
         coordinates: ""
       });
     }, 2000);
+    setUpdCert(certificate.type)
   };
 
   const cropOptions = [

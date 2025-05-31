@@ -10,6 +10,7 @@ import QRCodeGenerator from "@/components/QRCodeGenerator";
 const Index = () => {
   const [userRole] = useState<"farmer" | "certifier">("farmer");
   const [harvestCerts, setHarvestCerts] = useState(null)
+  const [updCert, setUpdCert] = useState([])
 
   const api_endpoint = "http://127.0.0.1:5000/order/all"
 
@@ -21,7 +22,7 @@ const Index = () => {
     }
 
     init()
-  },[])
+  },[updCert])
 
   console.log(harvestCerts)
 
@@ -107,7 +108,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="mint" className="space-y-6">
-            <MintHarvestForm />
+            <MintHarvestForm setUpdCert={setUpdCert} />
           </TabsContent>
 
           <TabsContent value="certify" className="space-y-6">

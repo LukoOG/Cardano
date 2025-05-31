@@ -16,6 +16,7 @@ interface HarvestCardProps {
   quantity: string;
   status: "pending" | "certified" | "rejected";
   certifier?: string;
+  setUpdCert: ()=> void;
 }
 
 const HarvestCardBack = ({
@@ -26,7 +27,7 @@ const HarvestCardBack = ({
   harvestDate = new Date().toLocaleDateString(),
   quantity,
   status,
-  certifier
+  certifier,
 }: HarvestCardProps) => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
