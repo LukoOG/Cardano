@@ -6,14 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import QRCodeLib from "qrcode";
 
 const QRCodeGenerator = () => {
   const { toast } = useToast();
   const [nftId, setNftId] = useState("");
   const [qrGenerated, setQrGenerated] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState("");
 
-  const generateQR = () => {
+  const generateQR = async () => {
     if (!nftId) {
       toast({
         title: "Error",
@@ -23,15 +25,35 @@ const QRCodeGenerator = () => {
       return;
     }
 
-    // Generate QR code URL (in real app, this would be actual QR generation)
-    const traceUrl = `https://farmfi.trace/${nftId}`;
-    setQrCodeUrl(traceUrl);
-    setQrGenerated(true);
+    try {
+      // Generate QR code URL
+      const traceUrl = `https://farmfi.trace/${nftId}`;
+      setQrCodeUrl(traceUrl);
+      
+      // Generate actual QR code image
+      const qrDataUrl = await QRCodeLib.toDataURL(traceUrl, {
+        width: 192,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      
+      setQrCodeDataUrl(qrDataUrl);
+      setQrGenerated(true);
 
-    toast({
-      title: "QR Code Generated",
-      description: "QR code for harvest traceability has been created successfully.",
-    });
+      toast({
+        title: "QR Code Generated",
+        description: "QR code for harvest traceability has been created successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate QR code.",
+        variant: "destructive",
+      });
+    }
   };
 
   const copyToClipboard = () => {
@@ -43,10 +65,17 @@ const QRCodeGenerator = () => {
   };
 
   const downloadQR = () => {
-    toast({
-      title: "Download Started",
-      description: "QR code image download has started.",
-    });
+    if (qrCodeDataUrl) {
+      const link = document.createElement('a');
+      link.download = `farmfi-qr-${nftId}.png`;
+      link.href = qrCodeDataUrl;
+      link.click();
+      
+      toast({
+        title: "Download Started",
+        description: "QR code image download has started.",
+      });
+    }
   };
 
   return (
@@ -79,16 +108,12 @@ const QRCodeGenerator = () => {
         {qrGenerated && (
           <div className="space-y-4 p-4 bg-farmfi-green-50 rounded-lg border border-farmfi-green-100">
             <div className="text-center">
-              {/* QR Code placeholder - in real app would show actual QR code */}
-              <div className="w-48 h-48 mx-auto bg-white border-2 border-farmfi-green-200 rounded-lg flex items-center justify-center">
-                <div className="grid grid-cols-8 gap-1">
-                  {Array.from({ length: 64 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`w-2 h-2 ${Math.random() > 0.5 ? 'bg-black' : 'bg-white'}`}
-                    />
-                  ))}
-                </div>
+              <div className="inline-block p-4 bg-white border-2 border-farmfi-green-200 rounded-lg">
+                <img 
+                  src={qrCodeDataUrl} 
+                  alt={`QR Code for ${nftId}`}
+                  className="w-48 h-48"
+                />
               </div>
             </div>
 
